@@ -23,6 +23,7 @@
 #include "ns3/internet-module.h"
 #include "ns3/yans-wifi-helper.h"
 #include "ns3/ssid.h"
+#include "ns3/flow-monitor-module.h"
 
 // Default Network Topology
 //
@@ -38,6 +39,13 @@
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("ThirdScriptExample");
+
+void
+CourseChange (std::string context, Ptr<const MobilityModel> model) {
+  Vector position = model->GetPosition ();
+  NS_LOG_UNCOND (context <<
+    " x = " << position.x << ", y = " << position.y);
+}
 
 int 
 main (int argc, char *argv[])
@@ -183,7 +191,39 @@ main (int argc, char *argv[])
       csma.EnablePcap ("third", csmaDevices.Get (0), true);
     }
 
+std::ostringstream oss;
+std::ostringstream oss2;
+
+oss <<
+  "/NodeList/" << wifiStaNodes.Get (nWifi - 2)->GetId () <<
+  "/$ns3::MobilityModel/CourseChange";
+Config::Connect (oss.str (), MakeCallback (&CourseChange));
+
+oss2 <<
+  "/NodeList/" << wifiStaNodes.Get (nWifi - 1)->GetId () <<
+  "/$ns3::MobilityModel/CourseChange";
+Config::Connect (oss2.str (), MakeCallback (&CourseChange));
+  
+/* Adding a flow monitor to compute throughput */    
+FlowMonitorHelper flowmon;  
+Ptr<FlowMonitor> monitor = flowmon.InstallAll();
   Simulator::Run ();
+monitor->SerializeToXmlFile("FlowMonitor.xml", true, true);
+
+/* Reading from the flow monitor */
+  monitor->CheckForLostPackets();
+  
+  Ptr<Ipv4FlowClassifier> classifier = DynamicCast<Ipv4FlowClassifier> (flowmon.GetClassifier());
+  std::map<FlowId, FlowMonitor::FlowStats> stats = monitor->GetFlowStats();
+  
+  for(std::map<FlowId, FlowMonitor::FlowStats>::const_iterator i = stats.begin(); i != stats.end(); ++i ){
+     Ipv4FlowClassifier::FiveTuple t = classifier->FindFlow (i->first);
+     std::cout << "Flow " << i->first << " (" << t.sourceAddress << " -> " << t.destinationAddress << ")\n";
+     std::cout << "  Tx Packets: " << i->second.txPackets << "\n";
+     std::cout << "  Tx Bytes:   " << i->second.txBytes << "\n";
+     std::cout << "  Rx Bytes:   " << i->second.rxBytes << "\n";
+     std::cout << "  Throughput: " << i->second.rxBytes * 8.0 / (i->second.timeLastRxPacket.GetSeconds() - i->second.timeFirstTxPacket.GetSeconds()) / 1000 / 1000  << " Mbps\n";
+  }
   Simulator::Destroy ();
   return 0;
 }
