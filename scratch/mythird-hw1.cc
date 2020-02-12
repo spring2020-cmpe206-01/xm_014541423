@@ -150,16 +150,19 @@ main (int argc, char *argv[])
   csmaInterfaces = address.Assign (csmaDevices);
 
   address.SetBase ("10.1.3.0", "255.255.255.0");
-  address.Assign (staDevices);
+//my new input starts here:
+  Ipv4InterfaceContainer wifistaInterfaces;
+  wifistaInterfaces = address.Assign (staDevices);
+  //address.Assign (staDevices);
   address.Assign (apDevices);
 
   UdpEchoServerHelper echoServer (9);
 
-  ApplicationContainer serverApps = echoServer.Install (csmaNodes.Get (nCsma));
+  ApplicationContainer serverApps = echoServer.Install (wifiStaNodes.Get (nWifi-2));
   serverApps.Start (Seconds (1.0));
   serverApps.Stop (Seconds (10.0));
 
-  UdpEchoClientHelper echoClient (csmaInterfaces.GetAddress (nCsma), 9);
+  UdpEchoClientHelper echoClient (wifistaInterfaces.GetAddress (nWifi-2), 9);
   echoClient.SetAttribute ("MaxPackets", UintegerValue (1));
   echoClient.SetAttribute ("Interval", TimeValue (Seconds (1.0)));
   echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
