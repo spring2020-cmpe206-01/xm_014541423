@@ -42,7 +42,8 @@ main (int argc, char *argv[])
   Time::SetResolution (Time::NS);
   LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
   LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
-
+  
+  //NS_LOG_INFO("Creating Topology");
   NodeContainer nodes;
   nodes.Create (2);
 

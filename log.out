@@ -1,0 +1,16 @@
+Waf: Entering directory `/Users/zhangxiaoman/ns-3-allinone/ns-3-dev/build'
+Waf: Leaving directory `/Users/zhangxiaoman/ns-3-allinone/ns-3-dev/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (1.083s)
+UdpEchoClientApplication:UdpEchoClient(0x7ff96346a420)
+UdpEchoClientApplication:SetDataSize(0x7ff96346a420, 1024)
+UdpEchoClientApplication:StartApplication(0x7ff96346a420)
+UdpEchoClientApplication:ScheduleTransmit(0x7ff96346a420, +0.0ns)
+UdpEchoClientApplication:Send(0x7ff96346a420)
+UdpEchoClientApplication:Send(): At time 2s client sent 1024 bytes to 10.1.1.2 port 9
+At time 2.00369s server received 1024 bytes from 10.1.1.1 port 49153
+At time 2.00369s server sent 1024 bytes to 10.1.1.1 port 49153
+UdpEchoClientApplication:HandleRead(0x7ff96346a420, 0x7ff963468470)
+UdpEchoClientApplication:HandleRead(): At time 2.00737s client received 1024 bytes from 10.1.1.2 port 9
+UdpEchoClientApplication:DoDispose(0x7ff96346a420)
+UdpEchoClientApplication:~UdpEchoClient(0x7ff96346a420)
