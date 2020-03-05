@@ -56,6 +56,15 @@ LogNormalPropagationLossModel::GetTypeId (void)
                    DoubleValue (1.0),
                    MakeDoubleAccessor (&LogNormalPropagationLossModel::m_referenceDistance),
                    MakeDoubleChecker<double> ())
+    .AddAttribute ("randVariable", "The random variable used to pick a loss every time CalcRxPower is invoked.",
+                   StringValue ("ns3::NormalRandomVariable[Mean=0|Variance=0]"),
+                   MakePointerAccessor (&LogNormalPropagationLossModel::m_randVariable),
+                   MakePointerChecker<RandomVariableStream> ()) 
+    .AddAttribute ("ReferenceLoss",
+                   "The reference loss at reference distance (dB). (Default is Friis at 1m with 5.15 GHz)",
+                   DoubleValue (46.6777),
+                   MakeDoubleAccessor (&LogNormalPropagationLossModel::m_referenceLoss),
+                   MakeDoubleChecker<double> ())            
   ;
   return tid;
 
@@ -88,7 +97,37 @@ LogNormalPropagationLossModel::DoCalcRxPower (double txPowerDbm,
                                                 Ptr<MobilityModel> b) const
 {
 	// TODO: Write your implementation of the RX power with this model
-    return txPowerDbm;
+  // double rxg = -m_variable->GetValue ();
+  // //NS_LOG_DEBUG ("attenuation coefficient="<<rxc<<"Db");
+  // //return txPowerDbm + rxc;
+  
+  // double distance = a->GetDistanceFrom (b);
+  // if (distance <= m_referenceDistance)
+  //   {
+  //     return txPowerDbm - m_referenceLoss;
+  //   }
+  /**
+   * The formula is:
+   * rx = 10 * log (Pr0(tx)) - n * 10 * log (d/d0)
+   *
+   * Pr0: rx power at reference distance d0 (W)
+   * d0: reference distance: 1.0 (m)
+   * d: distance (m)
+   * tx: tx power (dB)
+   * rx: dB
+   *
+   * Which, in our case is:
+   *
+   * rx = rx0(tx) - 10 * n * log (d/d0)
+   */
+   
+  // double pathLossDb = 10 * m_exponent * std::log10 (distance / m_referenceDistance);
+  // double rxc = -m_referenceLoss - pathLossDb+rxg;
+  // NS_LOG_DEBUG ("distance="<<distance<<"m, reference-attenuation="<< -m_referenceLoss<<"dB, "<<
+  //               "attenuation coefficient="<<rxc<<"db");
+  // return txPowerDbm + rxc;
+
+  return txPowerDbm;
 }
 
 int64_t
