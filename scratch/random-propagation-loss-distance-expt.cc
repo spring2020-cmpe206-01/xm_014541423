@@ -131,7 +131,7 @@ int main (int argc, char *argv[])
 	lognormalProp->SetAttribute	("Exponent",DoubleValue (3));
 	//lognormalProp->SetAttribute("ReferenceDistance",DoubleValue (1.0));
 
-        for (double distance = 200.0; distance <= 400.0; distance += 50.0)
+        for (double distance = 6000.0; distance <= 12000.0; distance += 500)
 	{
 
 		Gnuplot2dDataset dataset = TestProbabilistic (lognormalProp, distance);
