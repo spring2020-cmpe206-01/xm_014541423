@@ -97,17 +97,18 @@ LogNormalPropagationLossModel::DoCalcRxPower (double txPowerDbm,
                                                 Ptr<MobilityModel> b) const
 {
 	// TODO: Write your implementation of the RX power with this model
-  // double rxg = -m_variable->GetValue ();
+  double rxc_random = -m_randVariable->GetValue ();
   // //NS_LOG_DEBUG ("attenuation coefficient="<<rxc<<"Db");
   // //return txPowerDbm + rxc;
   
-  // double distance = a->GetDistanceFrom (b);
-  // if (distance <= m_referenceDistance)
-  //   {
-  //     return txPowerDbm - m_referenceLoss;
-  //   }
+  double distance = a->GetDistanceFrom (b);
+  if (distance <= m_referenceDistance){
+    return txPowerDbm - m_referenceLoss-rxc_random;
+  }
+
+  
   /**
-   * The formula is:
+   * For the LogDistancePropagationLossModel, the formula is:
    * rx = 10 * log (Pr0(tx)) - n * 10 * log (d/d0)
    *
    * Pr0: rx power at reference distance d0 (W)
@@ -118,16 +119,16 @@ LogNormalPropagationLossModel::DoCalcRxPower (double txPowerDbm,
    *
    * Which, in our case is:
    *
-   * rx = rx0(tx) - 10 * n * log (d/d0)
+   * rx = rx0(tx) - 10 * n * log (d/d0) -rxc_random
    */
    
-  // double pathLossDb = 10 * m_exponent * std::log10 (distance / m_referenceDistance);
-  // double rxc = -m_referenceLoss - pathLossDb+rxg;
-  // NS_LOG_DEBUG ("distance="<<distance<<"m, reference-attenuation="<< -m_referenceLoss<<"dB, "<<
-  //               "attenuation coefficient="<<rxc<<"db");
-  // return txPowerDbm + rxc;
+  double pathLossDb = 10 * m_exponent * std::log10 (distance / m_referenceDistance);
+  double rxc = -m_referenceLoss - pathLossDb+rxc_random;
+  NS_LOG_DEBUG ("distance="<<distance<<"m, reference-attenuation="<< -m_referenceLoss<<"dB, "<<
+                "attenuation coefficient="<<rxc<<"db");
+  return txPowerDbm + rxc;
 
-  return txPowerDbm;
+  //return txPowerDbm;
 }
 
 int64_t

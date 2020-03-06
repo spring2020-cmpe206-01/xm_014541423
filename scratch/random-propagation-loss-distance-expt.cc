@@ -32,6 +32,7 @@
 #include "ns3/log.h"
 #include "ns3/mobility-model.h"
 #include "ns3/rng-seed-manager.h"
+#include "ns3/lognormal-shadowing-loss-model.h"
 
 
 #include <map>
