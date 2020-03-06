@@ -93,7 +93,6 @@ private:
   // You may include more fields as you see fit.
   double m_exponent; //!< model exponent
   double m_referenceDistance; //!< reference distance
-  double m_referenceLoss; //!< reference loss
   Ptr<NormalRandomVariable> m_randVariable; 
 };
 

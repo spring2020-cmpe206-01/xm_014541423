@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *  Author: Mahima Agumbe Suresh <mahima.agumbesuresh@sjsu.edu>
- * 
+ *  Modified  by xiaoman zhang
  */
 #include "ns3/log.h"
 #include "ns3/double.h"
@@ -57,15 +57,10 @@ LogNormalPropagationLossModel::GetTypeId (void)
                    MakeDoubleAccessor (&LogNormalPropagationLossModel::m_referenceDistance),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("randVariable", "The random variable used to pick a loss every time CalcRxPower is invoked.",
-                   StringValue ("ns3::NormalRandomVariable[Mean=0|Variance=0]"),
+                   StringValue ("ns3::NormalRandomVariable[Mean=0|Variance=10]"),
                    MakePointerAccessor (&LogNormalPropagationLossModel::m_randVariable),
-                   MakePointerChecker<RandomVariableStream> ()) 
-    .AddAttribute ("ReferenceLoss",
-                   "The reference loss at reference distance (dB). (Default is Friis at 1m with 5.15 GHz)",
-                   DoubleValue (46.6777),
-                   MakeDoubleAccessor (&LogNormalPropagationLossModel::m_referenceLoss),
-                   MakeDoubleChecker<double> ())            
-  ;
+                   MakePointerChecker<RandomVariableStream> ()) ;          
+  
   return tid;
 
 }
@@ -83,7 +78,7 @@ void
 LogNormalPropagationLossModel::SetReference (double referenceDistance, double referenceLoss)
 {
   m_referenceDistance = referenceDistance;
-  m_referenceLoss = referenceLoss;
+  //m_referenceLoss = referenceLoss;
 }
 double
 LogNormalPropagationLossModel::GetPathLossExponent (void) const
@@ -101,10 +96,10 @@ LogNormalPropagationLossModel::DoCalcRxPower (double txPowerDbm,
   // //NS_LOG_DEBUG ("attenuation coefficient="<<rxc<<"Db");
   // //return txPowerDbm + rxc;
   
-  double distance = a->GetDistanceFrom (b);
-  if (distance <= m_referenceDistance){
-    return txPowerDbm - m_referenceLoss-rxc_random;
-  }
+   double distance = a->GetDistanceFrom (b);
+   if (distance <= m_referenceDistance){
+    return txPowerDbm  + rxc_random;
+   }
 
   
   /**
@@ -122,10 +117,9 @@ LogNormalPropagationLossModel::DoCalcRxPower (double txPowerDbm,
    * rx = rx0(tx) - 10 * n * log (d/d0) -rxc_random
    */
    
-  double pathLossDb = 10 * m_exponent * std::log10 (distance / m_referenceDistance);
-  double rxc = -m_referenceLoss - pathLossDb+rxc_random;
-  NS_LOG_DEBUG ("distance="<<distance<<"m, reference-attenuation="<< -m_referenceLoss<<"dB, "<<
-                "attenuation coefficient="<<rxc<<"db");
+   double pathLossDb = 10 * m_exponent * std::log10 (distance / m_referenceDistance);
+   double rxc =  - pathLossDb+rxc_random;
+ 
   return txPowerDbm + rxc;
 
   //return txPowerDbm;

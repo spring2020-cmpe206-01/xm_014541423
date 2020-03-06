@@ -43,6 +43,7 @@ using namespace ns3;
 
 /// Round a double number to the given precision. e.g. dround(0.234, 0.1) = 0.2
 /// and dround(0.257, 0.1) = 0.3
+//NS_LOG_UNCOND ("Hello Simulator1");
 static double dround (double number, double precision)
 {
   number /= precision;
@@ -57,10 +58,11 @@ static double dround (double number, double precision)
   number *= precision;
   return number;
 }
-
+//NS_LOG_UNCOND ("Hello Simulator2");
 static Gnuplot2dDataset
-TestProbabilistic (Ptr<PropagationLossModel> model, double distance, unsigned int samples = 1000)
+TestProbabilistic (Ptr<LogNormalPropagationLossModel> model, double distance, unsigned int samples = 100000)
 {
+	//NS_LOG_UNCOND ("Hello Simulator3");
 	Ptr<ConstantPositionMobilityModel> a = CreateObject<ConstantPositionMobilityModel> ();
 	Ptr<ConstantPositionMobilityModel> b = CreateObject<ConstantPositionMobilityModel> ();
 
@@ -107,11 +109,11 @@ int main (int argc, char *argv[])
   cmd.Parse (argc, argv);
   std::ofstream plotFile ("output.plt");
 
-  
+  //NS_LOG_UNCOND ("Hello Simulator4");
   //Set the random seed value
   RngSeedManager::SetSeed (3);  
   
-  GnuplotCollection gnuplots ("rxPower-pdf-random.pdf");
+  GnuplotCollection gnuplots ("rxPower-pdf-lognormal-shadowing.png");
 
 
 
@@ -120,17 +122,19 @@ int main (int argc, char *argv[])
 	plot.AppendExtra ("set xlabel 'rxPower (dBm)'");
 	plot.AppendExtra ("set ylabel 'Probability'");
 	plot.AppendExtra ("set key outside");
+	//NS_LOG_UNCOND ("Hello Simulator5");
+    //LogNormalPropagationLossModel
+	Ptr<LogNormalPropagationLossModel> lognormalProp = CreateObject<LogNormalPropagationLossModel> ();
 
-    // Random propagation model with uniform random distribution
-	Ptr<RandomPropagationLossModel> randomProp = CreateObject<RandomPropagationLossModel> ();
 
+	lognormalProp->SetAttribute("randVariable", StringValue ("ns3::NormalRandomVariable[Mean=0|Variance=2]"));
+	lognormalProp->SetAttribute	("Exponent",DoubleValue (3));
+	//lognormalProp->SetAttribute("ReferenceDistance",DoubleValue (1.0));
 
-	randomProp->SetAttribute("Variable", StringValue ("ns3::UniformRandomVariable[Min=20|Max=100]"));
-
-        for (double distance = 50.0; distance <= 200.0; distance += 50.0)
+        for (double distance = 200.0; distance <= 400.0; distance += 50.0)
 	{
 
-		Gnuplot2dDataset dataset = TestProbabilistic (randomProp, distance);
+		Gnuplot2dDataset dataset = TestProbabilistic (lognormalProp, distance);
 
 		//New dataset for each distance. Adds a line to the plot
 		std::ostringstream os;
@@ -142,14 +146,14 @@ int main (int argc, char *argv[])
 
 
 	
-    plot.SetTitle ("RandomPropagationLossModel");
+    plot.SetTitle ("LognormalShadowingPropagationLossModel");
     gnuplots.AddPlot (plot);
 
 
   }
 
 
-  
+ // NS_LOG_UNCOND ("Hello Simulator6");
   gnuplots.GenerateOutput (plotFile);
   //NS_LOG_UNCOND (plotFile);
   plotFile.close();
