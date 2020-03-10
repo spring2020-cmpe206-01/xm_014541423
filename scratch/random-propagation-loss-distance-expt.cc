@@ -127,11 +127,11 @@ int main (int argc, char *argv[])
 	Ptr<LogNormalPropagationLossModel> lognormalProp = CreateObject<LogNormalPropagationLossModel> ();
 
 
-	lognormalProp->SetAttribute("randVariable", StringValue ("ns3::NormalRandomVariable[Mean=0|Variance=2]"));
-	lognormalProp->SetAttribute	("Exponent",DoubleValue (3));
+	lognormalProp->SetAttribute("randVariable", StringValue ("ns3::NormalRandomVariable[Mean=0|Variance=4]"));
+	lognormalProp->SetAttribute	("Exponent",DoubleValue (2.5));
 	//lognormalProp->SetAttribute("ReferenceDistance",DoubleValue (1.0));
 
-        for (double distance = 6000.0; distance <= 12000.0; distance += 500)
+        for (double distance = 5000.0; distance <= 8500.0; distance += 500)
 	{
 
 		Gnuplot2dDataset dataset = TestProbabilistic (lognormalProp, distance);
